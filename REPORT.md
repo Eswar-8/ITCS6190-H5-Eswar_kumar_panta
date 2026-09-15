@@ -91,7 +91,22 @@ The three changes you made to `wordcount.py`. Paste the lines you added or rewro
 (`git diff` gives you exactly this).
 
 ```python
+1. change 1
+words = lines.select(explode(split(lower(col("value")), r"\s+")).alias("word"))
+2. change 2
+min_length = int(sys.argv[3] if len(sys.argv)>3 else 3)
+3. change 3
+words_filtered = filtered_words.count()
 
+counts = (filtered_words
+               .groupBy("word").count()
+               .orderBy(col("count").desc(), col("word")))
+
+distinct_words = counts.count()
+
+print(f"{words_scanned} words scanned")
+print(f"{words_filtered} words of at least {min_length} characters")
+print(f"{distinct_words} distinct words")
 ```
 
 ---
