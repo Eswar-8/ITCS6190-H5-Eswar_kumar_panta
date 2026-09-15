@@ -1,1 +1,7 @@
-# Create your own input dataset
+hadoop mapreduce is a software framework for writing applications
+hadoop word count is the classic hello world program for big data
+mapreduce breaks down processing into map phase and reduce phase
+hadoop processes large datasets across clusters of computers
+hDFS stores data reliably across distributed nodes in a hadoop cluster
+word count counts the occurrence of each word in a dataset
+learning hadoop opens up big data processing opportunities
