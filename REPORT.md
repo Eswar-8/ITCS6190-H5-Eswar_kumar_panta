@@ -1,8 +1,10 @@
 # Hands-on L5: Report
 
-**Name:**
-**Student ID:**
-**Email:**
+**Name:** Eswar Kumar
+
+**Student ID:** 801505751
+
+**Email:** epanta@charlotte.edu
 
 ---
 
@@ -12,7 +14,37 @@ The commands you used, in the order you used them. If you deviated from the step
 README, say where and why.
 
 ```bash
+# 1. Start the cluster
+docker compose -f docker-compose.codespaces.yml up -d
 
+# 2. Interactive PySpark Shell session
+docker exec -it spark-master /opt/spark/bin/pyspark --master spark://spark-master:7077
+
+# 3. Copy original script into container and run Part 1
+docker cp wordcount.py spark-master:/opt/spark/work-dir/
+docker exec -it spark-master /opt/spark/bin/spark-submit \
+  --master spark://spark-master:7077 \
+  /opt/spark/work-dir/wordcount.py \
+  /opt/spark/work-dir/shared/input/data/input.txt \
+  /opt/spark/work-dir/shared/output/wordcount
+
+# 4. Copy updated script and run Part 2 (v2 - default min length 3)
+docker cp wordcount.py spark-master:/opt/spark/work-dir/
+docker exec -it spark-master /opt/spark/bin/spark-submit \
+  --master spark://spark-master:7077 \
+  /opt/spark/work-dir/wordcount.py \
+  /opt/spark/work-dir/shared/input/data/input.txt \
+  /opt/spark/work-dir/shared/output/wordcount-v2
+
+# 5. Run Part 2 with min length 5
+docker exec -it spark-master /opt/spark/bin/spark-submit \
+  --master spark://spark-master:7077 \
+  /opt/spark/work-dir/wordcount.py \
+  /opt/spark/work-dir/shared/input/data/input.txt \
+  /opt/spark/work-dir/shared/output/wordcount-long 5
+
+# 6. Stop cluster
+docker compose down
 ```
 
 ---
@@ -22,7 +54,13 @@ README, say where and why.
 ### My input dataset
 
 ```
-
+hadoop mapreduce is a software framework for writing applications
+Hadoop word count is the classic hello world program for big Data
+mapreduce breaks down processing into map phase and reduce phase
+hadoop processes large datasets across clusters of computers
+hDFS stores data reliably across distributed nodes in a hadoop cluster
+word count counts the occurrence of each word in a dataset
+learning hadoop opens up big data processing opportunities
 ```
 
 ### The output of part 1
