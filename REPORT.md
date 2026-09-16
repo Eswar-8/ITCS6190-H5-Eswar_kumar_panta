@@ -251,7 +251,7 @@ print(f"{distinct_words} distinct words")
 
 * **Distinct words removed by case folding:** Case folding normalized upper/lowercase variations into a single lowercase key.
 * **Distinct words removed by longer minimum:** Raising the minimum word length parameter from 3 to 5 removed **11 distinct words** (dropping 3- and 4-letter words such as `data`, `word`, and `big`), reducing the distinct word count from 43 in `wordcount-v2/` down to 32 in `wordcount-long/`.
-* **Word count change example:** The word **`hadoop`** (originally appearing as `Hadoop 5` in the baseline) changed to lowercase (`hadoop 5`) when counting became case-insensitive.
+* **Word count change example:** The word **`hadoop`** (originally appearing as `hadoop 4` in the baseline) changed to lowercase (`hadoop 5`) when counting became case-insensitive.
 
 
 ### Jobs
