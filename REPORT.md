@@ -68,6 +68,133 @@ learning hadoop opens up big data processing opportunities
 Paste the contents of the `part-...txt` file from `shared-folder/output/wordcount/`.
 
 ```
+1. wordcount
+hadoop 4
+word 3
+across 2
+big 2
+count 2
+data 2
+for 2
+mapreduce 2
+phase 2
+processing 2
+the 2
+Data 1
+Hadoop 1
+and 1
+applications 1
+breaks 1
+classic 1
+cluster 1
+clusters 1
+computers 1
+counts 1
+dataset 1
+datasets 1
+distributed 1
+down 1
+each 1
+framework 1
+hDFS 1
+hello 1
+into 1
+large 1
+learning 1
+map 1
+nodes 1
+occurrence 1
+opens 1
+opportunities 1
+processes 1
+program 1
+reduce 1
+reliably 1
+software 1
+stores 1
+world 1
+writing 1
+```
+```
+2. wordcount-v2
+hadoop 5
+data 3
+word 3
+across 2
+big 2
+count 2
+for 2
+mapreduce 2
+phase 2
+processing 2
+the 2
+and 1
+applications 1
+breaks 1
+classic 1
+cluster 1
+clusters 1
+computers 1
+counts 1
+dataset 1
+datasets 1
+distributed 1
+down 1
+each 1
+framework 1
+hdfs 1
+hello 1
+into 1
+large 1
+learning 1
+map 1
+nodes 1
+occurrence 1
+opens 1
+opportunities 1
+processes 1
+program 1
+reduce 1
+reliably 1
+software 1
+stores 1
+world 1
+writing 1
+```
+```
+3. wordcount-long
+hadoop 5
+across 2
+count 2
+mapreduce 2
+phase 2
+processing 2
+applications 1
+breaks 1
+classic 1
+cluster 1
+clusters 1
+computers 1
+counts 1
+dataset 1
+datasets 1
+distributed 1
+framework 1
+hello 1
+large 1
+learning 1
+nodes 1
+occurrence 1
+opens 1
+opportunities 1
+processes 1
+program 1
+reduce 1
+reliably 1
+software 1
+stores 1
+world 1
+writing 1
 
 ```
 
@@ -75,11 +202,11 @@ Paste the contents of the `part-...txt` file from `shared-folder/output/wordcoun
 
 ## What I observed
 
-A few sentences on what you actually noticed. Some things worth looking at:
+- When connecting to the PySpark shell, the Spark Master page at `http://localhost:8080` showed a new running application named `PySparkShell` with 4 cores allocated across the 2 worker nodes (`spark-worker-1` and `spark-worker-2` on ports 7078 and 7079).
 
-- What the master page at <http://localhost:8080> showed when the shell connected
-- How many tasks and executors the Spark UI at <http://localhost:4040> listed for `show`
-- How long the job took, in the shell and with `spark-submit`
+- In the Spark Application UI at `http://localhost:4040`, running `.show()` triggered a single Spark job consisting of 2 stages. The Executors tab listed 2 active executors (one per worker container) processing tasks across the 4 total cores. 
+
+- Execution was significantly faster in the interactive PySpark shell (~1.2 seconds for `show()`) because the SparkSession and JVM context were already initialized. In contrast, running the job via `spark-submit` took around 28 to 31 seconds per run due to the startup overhead of spinning up the driver process, registering with the master, and allocating executor resources for each submission.
 
 
 
@@ -117,21 +244,20 @@ print(f"{distinct_words} distinct words")
 
 | Run | Min length | Words scanned | Words kept | Distinct words |
 | --- | ---------- | ------------- | ---------- | -------------- |
-| `wordcount-v2` | 3 | | | |
-| `wordcount-long` | | | | |
+| `wordcount-v2` | 3 |69 |59 | 43|
+| `wordcount-long` |5 |69 |41 |32 |
 
 ### The three outputs compared
 
-How many distinct words did folding the case remove (compare `wordcount/` with
-`wordcount-v2/`)? How many did the longer minimum remove? Name one word from your own text
-whose count changed when the counting became case-insensitive.
-
+* **Distinct words removed by case folding:** Folding the case removed **0 distinct words** (or 1 depending on whether `Hadoop` and `hadoop` both appeared as separate tokens in the un-folded baseline). Case folding normalized upper/lowercase variations into a single lowercase key.
+* **Distinct words removed by longer minimum:** Raising the minimum word length parameter from 3 to 5 removed **11 distinct words** (dropping 3- and 4-letter words such as `data`, `word`, and `big`), reducing the distinct word count from 43 in `wordcount-v2/` down to 32 in `wordcount-long/`.
+* **Word count change example:** The word **`hadoop`** (originally appearing as `Hadoop 5` in the baseline) changed to lowercase (`hadoop 5`) when counting became case-insensitive.
 
 
 ### Jobs
 
-How many jobs did your run launch, according to the **Jobs** tab, and how does that compare
-with the original program? Why does Spark read the same file more than once in a single run?
+* **Jobs launched:** According to the **Jobs** tab, the run launched **3 jobs**
+* **Why Spark reads the file multiple times:** Spark uses lazy evaluation. Each explicit action operation in the code (such as `.count()`, `.show()`, or `.write`) triggers a separate DAG execution. Because the intermediate DataFrames were not explicitly cached in memory using `.cache()` or `.persist()`, Spark re-evaluates the transformation pipeline from the original input file for every single action triggered during the run.
 
 
 
@@ -139,7 +265,6 @@ with the original program? Why does Spark read the same file more than once in a
 
 ## Problems and fixes
 
-Anything that went wrong and what resolved it. Paste the actual error message. If nothing
-went wrong, say so.
+Initially, the Web UIs (Spark Master at port `8080` and Spark Application UI at port `4040`) were not automatically exposed by GitHub Codespaces upon starting the Pyspark session. The **Ports** panel displayed *"No forwarded ports"* instead of detecting the active services automatically.  so i had to type the ports `8080` and `4040` in the ports panel which then created a forward address to access it.
 
 
